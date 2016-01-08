@@ -1,0 +1,16 @@
+{
+    "name": "ferranfg/calendar",
+    "authors": [{
+        "name": "Ferran Figueredo",
+        "email": "ferranfg@gmail.com"
+    }],
+    "require": {
+        "google/apiclient": "1.1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ferranfg\\Calendar\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
