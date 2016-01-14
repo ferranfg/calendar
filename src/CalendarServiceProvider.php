@@ -3,6 +3,7 @@
 namespace Ferranfg\Calendar;
 
 use Ferranfg\Calendar\Models\Calendar;
+use Illuminate\Support\ServiceProvider;
 
 class CalendarServiceProvider extends ServiceProvider
 {
