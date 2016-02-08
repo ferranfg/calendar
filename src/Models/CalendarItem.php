@@ -2,18 +2,10 @@
 
 namespace Ferranfg\Calendar\Models;
 
-class CalendarItem
+class CalendarItem extends Item
 {
-	protected $attributes;
-
-	public function __construct($attributes)
-	{
-		$this->attributes = $attributes;
-	}
-
-    public function __get($key)
+    public function setName($name)
     {
-        if (array_key_exists($key, $this->attributes)) return $this->attributes[$key];
+        return $this->attributes->setSummary($name);
     }
-
 }

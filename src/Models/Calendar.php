@@ -21,7 +21,7 @@ class Calendar
         $this->service = new Google_Service_Calendar($client);
     }
 
-    private function getClient($clientEmail, $clientKeyPath) : Google_Client
+    private function getClient($clientEmail, $clientKeyPath): Google_Client
     {
         $credentials = new Google_Auth_AssertionCredentials(
             $clientEmail,
@@ -37,7 +37,12 @@ class Calendar
         return $client;
     }
 
-    public function all() : CalendarCollection
+    public function getColors()
+    {
+        return $this->service->colors->get();
+    }
+
+    public function all(): CalendarCollection
     {
         $items   = [];
         $results = $this->service->calendarList->listCalendarList();
@@ -45,7 +50,7 @@ class Calendar
         return new CalendarCollection($items);
     }
 
-    public function create($attributes = []) : CalendarItem
+    public function create($attributes = []): CalendarItem
     {
         $calendar = new Google_Service_Calendar_Calendar();
         $calendar->setSummary($attributes['name']);
@@ -65,12 +70,12 @@ class Calendar
         return new CalendarItem($calendar);
     }
 
-    public function find($calendarId) : CalendarItem
+    public function find($calendarId): CalendarItem
     {
         return new CalendarItem($this->service->calendarList->get($calendarId));
     }
 
-    public function newInstance() : CalendarItem
+    public function newInstance(): CalendarItem
     {
         return new CalendarItem(new Google_Service_Calendar_Calendar);
     }
@@ -80,15 +85,17 @@ class Calendar
         return $this->service->calendars->delete($calendarId);
     }
 
-    public function allEvents($calendarId)
+    public function save($calendar)
     {
-        return $this->service->events->listEvents($calendarId);
+        $calendar = new Google_Service_Calendar_Calendar($calendar->toArray());
+
+        return $this->service->calendars->update($calendar->id, $calendar);
     }
 
-    public function createEvent($calendarId, $attributes = [])
+    public function newInstanceEvent($attributes = []): Google_Service_Calendar_Event
     {
-        $event = new Google_Service_Calendar_Event([
-            'summary' => $attributes['name'],
+        return new Google_Service_Calendar_Event([
+            'summary' => array_key_exists('name', $attributes) ? $attributes['name'] : null,
             'start' => [
                 'dateTime' => $attributes['start'],
                 'timeZone' => 'Europe/Madrid',
@@ -98,13 +105,37 @@ class Calendar
                 'timeZone' => 'Europe/Madrid',
             ],
             'attendees' => [
-                ['email' => $attributes['email']],
+                ['email' => array_key_exists('email', $attributes) ? $attributes['email'] : null],
             ],
-            'location' => $attributes['location'],
-            'description' => $attributes['description']
-        ]);        
+            'location'    => array_key_exists('location',    $attributes) ? $attributes['location']    : null,
+            'description' => array_key_exists('description', $attributes) ? $attributes['description'] : null,
+            'colorId'     => array_key_exists('colorId',     $attributes) ? $attributes['colorId']     : null
+        ]);
+    }
 
-        return $this->service->events->insert($calendarId, $event);
+    public function allEvents($calendarId)
+    {
+        return $this->service->events->listEvents($calendarId);
+    }
+
+    public function createEvent($calendarId, $attributes = [])
+    {
+        return $this->service->events->insert($calendarId, $this->newInstanceEvent($attributes));
+    }
+
+    public function findEvent($calendarId, $eventId)
+    {
+        return new EventItem($this->service->events->get($calendarId, $eventId));
+    }
+
+    public function saveEvent($calendarId, $event)
+    {
+        return $this->service->events->update($calendarId, $event->id, $event->getAttributes());
+    }
+
+    public function destroyEvent($calendarId, $eventId)
+    {
+        return $this->service->events->delete($calendarId, $eventId);
     }
 
 }
