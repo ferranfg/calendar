@@ -2,26 +2,27 @@
 
 namespace Ferranfg\Calendar\Models;
 
-use Google_Auth_AssertionCredentials;
 use Google_Client;
+use Google_Config;
 use Google_Service_Calendar;
-use Google_Service_Calendar_AclRule;
-use Google_Service_Calendar_AclRuleScope;
-use Google_Service_Calendar_Calendar;
 use Google_Service_Calendar_Event;
+use Google_Service_Calendar_AclRule;
+use Google_Auth_AssertionCredentials;
+use Google_Service_Calendar_Calendar;
+use Google_Service_Calendar_AclRuleScope;
 
 class Calendar
 {
     private $service;
 
-    public function __construct($clientEmail, $clientKeyPath)
+    public function __construct($clientEmail, $clientKeyPath, $storagePath = '../tmp/cache')
     {
-        $client = $this->getClient($clientEmail, $clientKeyPath);
+        $client = $this->getClient($clientEmail, $clientKeyPath, $storagePath);
 
         $this->service = new Google_Service_Calendar($client);
     }
 
-    private function getClient($clientEmail, $clientKeyPath): Google_Client
+    private function getClient($clientEmail, $clientKeyPath, $storagePath): Google_Client
     {
         $credentials = new Google_Auth_AssertionCredentials(
             $clientEmail,
@@ -29,7 +30,10 @@ class Calendar
             file_get_contents($clientKeyPath)
         );
 
-        $client = new Google_Client();
+        $config = new Google_Config();
+        $config->setClassConfig('Google_Cache_File', array('directory' => $storagePath));
+
+        $client = new Google_Client($config);
         $client->setAssertionCredentials($credentials);
 
         if ($client->getAuth()->isAccessTokenExpired()) $client->getAuth()->refreshTokenWithAssertion();

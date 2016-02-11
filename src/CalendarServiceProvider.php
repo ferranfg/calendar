@@ -16,7 +16,11 @@ class CalendarServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton('calendar', function ($app)
 		{
-			return new Calendar(env('GOOGLE_CLIENT_EMAIL'), base_path(env('GOOGLE_PRIVATE_KEY')));
+			$clientEmail = env('GOOGLE_CLIENT_EMAIL');
+			$privatePath = base_path(env('GOOGLE_PRIVATE_KEY'));
+			$storagePath = storage_path() . '/framework/cache';
+
+			return new Calendar($clientEmail, $privatePath, $storagePath);
 		});
 	}
 
