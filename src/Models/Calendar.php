@@ -98,7 +98,7 @@ class Calendar
 
     public function newInstanceEvent($attributes = []): Google_Service_Calendar_Event
     {
-        return new Google_Service_Calendar_Event([
+        $event = new Google_Service_Calendar_Event([
             'summary' => array_key_exists('name', $attributes) ? $attributes['name'] : null,
             'start' => [
                 'dateTime' => $attributes['start'],
@@ -113,9 +113,15 @@ class Calendar
             ],
             'location'    => array_key_exists('location',    $attributes) ? $attributes['location']     : null,
             'description' => array_key_exists('description', $attributes) ? $attributes['description']  : null,
-            'colorId'     => array_key_exists('colorId',     $attributes) ? $attributes['colorId']      : null,
-            'recurrence'  => array_key_exists('recurrence',  $attributes) ? [$attributes['recurrence']] : null
+            'colorId'     => array_key_exists('colorId',     $attributes) ? $attributes['colorId']      : null
         ]);
+
+        if (array_key_exists('recurrence', $attributes) and ! empty($attributes['recurrence']))
+        {
+            $event->setRecurrence([$attributes['recurrence']]);
+        }
+
+        return $event;
     }
 
     public function allEvents($calendarId)
