@@ -29,4 +29,9 @@ class EventItem extends Item
     {
         $this->attributes->setKind($kind);
     }
+
+    public function setRecurrence($recurrence)
+    {
+        return $this->attributes->setRecurrence([$recurrence]);
+    }
 }

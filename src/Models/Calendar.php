@@ -111,9 +111,10 @@ class Calendar
             'attendees' => [
                 ['email' => array_key_exists('email', $attributes) ? $attributes['email'] : null],
             ],
-            'location'    => array_key_exists('location',    $attributes) ? $attributes['location']    : null,
-            'description' => array_key_exists('description', $attributes) ? $attributes['description'] : null,
-            'colorId'     => array_key_exists('colorId',     $attributes) ? $attributes['colorId']     : null
+            'location'    => array_key_exists('location',    $attributes) ? $attributes['location']     : null,
+            'description' => array_key_exists('description', $attributes) ? $attributes['description']  : null,
+            'colorId'     => array_key_exists('colorId',     $attributes) ? $attributes['colorId']      : null,
+            'recurrence'  => array_key_exists('recurrence',  $attributes) ? [$attributes['recurrence']] : null
         ]);
     }
 
